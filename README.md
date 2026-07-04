@@ -10,10 +10,10 @@ NO  → Pass to Controller
 
 ## Tech Stack
 
--**Java 21 + Spring Boot 4.0.7** - Core framework
--**Redis** - Atomic rate limiting using Lua Scripts
--**MySQL + Spring Data JPA** - Violation audit logging
--**Lombok** - Boilerplate elimination
+- **Java 21 + Spring Boot 4.0.7** - Core framework
+- **Redis** - Atomic rate limiting using Lua Scripts
+- **MySQL + Spring Data JPA** - Violation audit logging
+- **Lombok** - Boilerplate elimination
 
 ## Core Engineering Decisions
 
