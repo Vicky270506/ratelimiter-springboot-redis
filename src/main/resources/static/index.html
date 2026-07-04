@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate Limiter Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #0f0f0f;
+            color: #fff;
+        }
+        h1 { color: #00ff88; }
+        h2 { color: #aaa; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background: #1a1a1a;
+            padding: 10px;
+            text-align: left;
+            color: #00ff88;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #222;
+        }
+        .stat-box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px;
+            min-width: 150px;
+        }
+        .stat-number {
+            font-size: 2em;
+            color: #ff4444;
+            font-weight: bold;
+        }
+        button {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>API Rate Limiter Dashboard</h1>
+
+<div id="stats"></div>
+<button onclick="loadStats()">Refresh</button>
+
+<h2>Recent Violations</h2>
+<table>
+    <thead>
+    <tr>
+        <th>IP Address</th>
+        <th>Endpoint</th>
+        <th>Blocked At</th>
+    </tr>
+    </thead>
+    <tbody id="violations-table"></tbody>
+</table>
+
+<script>
+    async function loadStats() {
+        const res = await fetch('/dashboard/stats');
+        const data = await res.json();
+
+        console.log(data); // temporary - lets you see the keys
+
+        document.getElementById('stats').innerHTML = `
+        <div class="stat-box">
+            <div>Total Violations</div>
+            <div class="stat-number">${data.totalViolations}</div>
+        </div>
+    `;
+
+        const tbody = document.getElementById('violations-table');
+        tbody.innerHTML = '';
+        data.recentViolations.forEach(v => {
+            tbody.innerHTML += `
+            <tr>
+                <td>${v.ipAddress}</td>
+                <td>${v.endpoint}</td>
+                <td>${v.blockedAt}</td>
+            </tr>
+        `;
+        });
+    }
+</script>
+
+</body>
+</html>
