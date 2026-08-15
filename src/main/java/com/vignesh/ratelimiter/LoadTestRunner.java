@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoadTestRunner {
     private static final String TARGET_URL = "http://localhost:8080/api/data";
-    private static final int CONCURRENT_USERS = 50;
+    private static final int CONCURRENT_USERS = 5000;
 
     public static void main(String[] args) throws InterruptedException{
         HttpClient client = HttpClient.newHttpClient(); //Shared Http Client
