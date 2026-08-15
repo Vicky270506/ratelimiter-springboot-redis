@@ -6,6 +6,7 @@ import com.vignesh.ratelimiter.service.ViolationLogService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 // Blocked requests: write 429 directly, never call chain.doFilter()
 
 @Component
+@Slf4j
 public class RateLimitFilter implements Filter {
 
     @Autowired
@@ -46,10 +48,16 @@ public class RateLimitFilter implements Filter {
             if(rateLimiterService.isAllowed(ipAddress)){
                 //Request is within limit - so pass this request
                 chain.doFilter(request, response);
+                //Log latency in MySQL - this is the proof for sub-5ms overhead
+                long latency = System.currentTimeMillis() - startTime;
+                log.info("ALLOWED | ip = {} endpoint = {} latency = {}ms", ipAddress, endpoint, latency);
             }
             else{
                 //Request exceeded limit - log async, block immediately
                 violationLogService.logViolation(ipAddress, endpoint);
+                //Log latency in MySQL - this is the proof for sub-5ms overhead
+                long latency = System.currentTimeMillis() - startTime;
+                log.warn("BLOCKED | ip = {} endpoint = {} latency = {}ms", ipAddress, endpoint, latency);
 
                 httpResponse.setStatus(429);
                 httpResponse.setContentType("application/json");
@@ -58,9 +66,5 @@ public class RateLimitFilter implements Filter {
                                 "\"message\":\"Rate limit exceeded. Try again later.\"}"
                 );
             }
-
-            //Log latency in MySQL - this is the proof for sub-5ms overhead
-            long latency = System.currentTimeMillis() - startTime;
-            System.out.println("[RateLimiter] " + ipAddress + " | " + endpoint + " | " + latency + "ms");
     }
 }

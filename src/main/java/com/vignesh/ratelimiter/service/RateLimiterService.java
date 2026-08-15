@@ -1,5 +1,6 @@
 package com.vignesh.ratelimiter.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
+@Slf4j
 public class RateLimiterService {
 
     @Autowired
@@ -30,6 +32,7 @@ public class RateLimiterService {
                 rateLimitScript,
                 Collections.singletonList(key),
                 String.valueOf(windowSeconds));
+        log.debug("Redis check | ip = {} count = {} limit = {}", ipAddress, requestCount, maxRequests);
         return requestCount != null && requestCount <= maxRequests;
     }
 
